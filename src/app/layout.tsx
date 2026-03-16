@@ -1,6 +1,7 @@
 import { GoogleTagManager } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Toaster } from "@/components/ui/sonner";
@@ -36,11 +37,13 @@ export default function RootLayout({
       <body
         className={`${geist.variable} antialiased min-h-screen flex flex-col`}
       >
-        <CartProvider>
-          {children}
-          <CartDrawer />
-          <Toaster />
-        </CartProvider>
+        <Suspense>
+          <CartProvider>
+            {children}
+            <CartDrawer />
+            <Toaster />
+          </CartProvider>
+        </Suspense>
       </body>
     </html>
   );

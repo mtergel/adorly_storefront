@@ -13,6 +13,7 @@ type ProductImageProps = Omit<ImageProps, "src"> & {
 
 export function ProductImage({
   src,
+  alt = "",
   iconClassName = "w-8 h-8",
   icon: Icon = ImageIcon,
   onError,
@@ -31,6 +32,7 @@ export function ProductImage({
   return (
     <Image
       src={src}
+      alt={alt}
       onError={(e) => {
         setHasError(true);
         onError?.(e);
