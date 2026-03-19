@@ -1,6 +1,6 @@
 "use client";
 
-import type { Product, Image as SpreeImage, Variant } from "@spree/sdk";
+import type { Media, Product, Variant } from "@spree/sdk";
 import { CircleCheckBig, CircleX, Loader2, ShoppingBag } from "lucide-react";
 import { useMemo, useState } from "react";
 import { MediaGallery } from "@/components/products/MediaGallery";
@@ -20,9 +20,9 @@ export function ProductDetails({ product, basePath }: ProductDetailsProps) {
   const { addItem } = useCart();
   const { currency } = useStore();
 
-  // Filter out master variant from variants list
+  // Filter variants list
   const variants = useMemo(() => {
-    return (product.variants || []).filter((v) => !v.is_master);
+    return (product.variants || []).filter(Boolean);
   }, [product.variants]);
 
   const hasVariants = variants.length > 0;
@@ -30,28 +30,28 @@ export function ProductDetails({ product, basePath }: ProductDetailsProps) {
 
   // Initialize with default variant or first available variant
   const [selectedVariant, setSelectedVariant] = useState<Variant | null>(() => {
-    if (product.default_variant && !product.default_variant.is_master) {
+    if (product.default_variant) {
       return product.default_variant;
     }
     if (hasVariants) {
       return variants.find((v) => v.purchasable) || variants[0];
     }
-    // For products without variants, use master variant
-    return product.master_variant || product.default_variant || null;
+    // For products without variants, use default variant
+    return product.default_variant || null;
   });
 
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // Get images for the gallery - variant images take priority
-  const galleryImages = useMemo((): SpreeImage[] => {
-    // If selected variant has images, show those
-    if (selectedVariant?.images && selectedVariant.images.length > 0) {
-      return selectedVariant.images;
+  // Get media for the gallery - variant media takes priority
+  const galleryImages = useMemo((): Media[] => {
+    // If selected variant has media, show those
+    if (selectedVariant?.media && selectedVariant.media.length > 0) {
+      return selectedVariant.media;
     }
-    // Otherwise show product images
-    return product.images || [];
-  }, [selectedVariant, product.images]);
+    // Otherwise show product media
+    return product.media || [];
+  }, [selectedVariant, product.media]);
 
   // Get pricing info from selected variant or product (using nested price objects)
   const price = selectedVariant?.price ?? product.price;
